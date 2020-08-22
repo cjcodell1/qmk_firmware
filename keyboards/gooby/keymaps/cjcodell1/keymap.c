@@ -1,0 +1,69 @@
+#include QMK_KEYBOARD_H
+
+enum combos {
+  QUOTESEMI_A,
+  LESSTHANQ_O,
+  GREATERTHANJ_E,
+  PK_U,
+  YX_I,
+  FB_D,
+  GM_H,
+  CW_T,
+  RV_N,
+  LZ_S
+
+};
+
+#define KC_GA LGUI_T(KC_C)
+#define KC_AS LALT_T(KC_C)
+#define KC_CD LCTL_T(KC_C)
+#define KA_SF LSFT_T(KC_F)
+#define KA_SJ LSFT_T(KC_J)
+#define KC_CK LCTL_T(KC_C)
+#define KC_AL LALT_T(KC_C)
+
+#define TD_Q ACTION_TAP_DANCE_DOUBLE(KC_Q, KC_TAB)
+#define TD_N ACTION_TAP_DANCE_DOUBLE(KC_N, KC_COMMA)
+#define TD_M ACTION_TAP_DANCE_DOUBLE(KC_M, KC_DOT)
+
+
+const uint16_t PROGMEM space_combo[] = {KC_G, KC_H, COMBO_END};
+const uint16_t PROGMEM bspace_combo[] = {KC_U, KC_I, COMBO_END};
+const uint16_t PROGMEM escape_combo[] = {KC_E, KC_R, COMBO_END};
+const uint16_t PROGMEM delete_combo[] = {KC_I, KC_O, COMBO_END};
+
+combo_t key_combos[COMBO_COUNT] = {
+  [SPACE_COMBO] = COMBO(space_combo, KC_SPACE)
+  [BSPACE_COMBO] = COMBO(bspace_combo, KC_BSPACE)
+  [ESCAPE_COMBO] = COMBO(escape_combo, KC_ESCAPE)
+  [DELETE_COMBO] = COMBO(delete_combo, KC_DELETE)
+};
+
+const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
+  [0] = LAYOUT_ortho_3x10(
+    TD_Q,  KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P,
+    KC_GA, KC_AS, KC_CD, KC_SF, KC_G, KC_H, KC_SJ, KC_CK, KC_AL, KC_ENTER,
+           KC_Z,       KC_C, LT(2, KC_V), LT(1, KC_B), TD_N, TD_M, KC_SLASH
+  ),
+
+  [1] = LAYOUT_ortho_3x10(
+    KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0,
+    KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT, XXXXXXX, XXXXXXX, KC_MINUS, KC_EQUAL, KC_LBRC, KC_RBRC,
+    KC_TILD, KC_GRV, KC_TRNS, MO(3), KC_SCOLON, KC_QUOTE, KC_BSLS
+  ),
+
+  [2] = LAYOUT_ortho_3x10(
+    KC_EXLM, KC_AT, KC_HASH, KC_DLR, KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN,
+    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_UNDS, KC_PLUS, KC_LCBR, KC_RCBR,
+    KC_TILD, KC_GRV, MO(3), KC_TRNS, S(KC_SCOLON), S(KC_QUOTE), S(KC_BSLS)
+  ),
+
+  [3] = LAYOUT_ortho_3x10(
+    RESET, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
+    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
+    XXXXXXX, XXXXXXX, KC_TRNS, KC_TRNS, XXXXXXX, XXXXXXX, XXXXXXX
+  )
+};
+
+//
+// KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0,
