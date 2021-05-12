@@ -17,8 +17,12 @@
 
 #include "quantum.h"
 
-#if defined(KEYBOARD_breadstick_whole)
-  #include "whole.h"
-#elif defined(KEYBOARD_breadstick_split)
-  #include "split.h"
-#endif // Breadstick split-ness
+#define LAYOUT( \
+    K00, K01, K02, K03, K04, K05, K06, K07, K08, K09,\
+    K10, K11, K12, K13, K14, K15, K16, K17, K18, K19)\
+{\
+    {K01, K03, K05, K07, K09},\
+    {K00, K02, K04, K06, K08},\
+    {K10, K12, K14, K16, K18},\
+    {K11, K13, K15, K17, K19}\
+}

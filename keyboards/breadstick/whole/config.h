@@ -1,4 +1,3 @@
-// TODO remove the whole specific details (like the Device Version and the Matrix Pins)
 /* Copyright 2021 Carter Codell
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,18 +15,18 @@
  */
 #pragma once
 
-#include "config_common.h"
+//#include "config_common.h"
 
 /* USB Device descriptor parameter */
-#define VENDOR_ID 0x6274
-#define PRODUCT_ID 0x6273
-//#define DEVICE_VER 0x0001
-#define MANUFACTURER breadtamer
-#define PRODUCT breadstick
+//#define VENDOR_ID 0x6274
+//#define PRODUCT_ID 0x6273
+#define DEVICE_VER 0x0001
+//#define MANUFACTURER breadtamer
+//#define PRODUCT breadstick
 
 /* key matrix size */
-//#define MATRIX_ROWS 4
-//#define MATRIX_COLS 5
+#define MATRIX_ROWS 4
+#define MATRIX_COLS 5
 
 /*
  * Keyboard Matrix Assignments
@@ -39,17 +38,18 @@
  *                  ROW2COL = ROW = Anode (+), COL = Cathode (-, marked on diode)
  *
  */
-//#define MATRIX_ROW_PINS { F1, F0, F6, F7 }
-//#define MATRIX_COL_PINS { B6, F4, F5, B4, D6 }
-//#define UNUSED_PINS
+#define MATRIX_ROW_PINS { F1, F0, F6, F7 }
+#define MATRIX_COL_PINS { B6, F4, F5, B4, D6 }
+#define UNUSED_PINS
 
 /* COL2ROW, ROW2COL*/
-#define DIODE_DIRECTION COL2ROW
+//#define DIODE_DIRECTION COL2ROW
 
 /* Debounce reduces chatter (unintended double-presses) - set 0 if debouncing is not needed */
-#define DEBOUNCE 5
+//#define DEBOUNCE 5
 
 // TODO RGB Lighting
+/*
 #define RGB_DI_PIN B7
 
 #ifdef RGB_DI_PIN
@@ -59,3 +59,4 @@
 #define RGBLIGHT_SAT_STEP 8
 #define RGBLIGHT_VAL_STEP 8
 #endif
+*/
