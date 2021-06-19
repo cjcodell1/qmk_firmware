@@ -1,0 +1,1042 @@
+#include "engine.h"
+
+// Configuration options for the engine
+
+#define C_SIZE uint64_t  // type for chord
+#define COMBO_MAX 4      // Longest Combo
+
+// Key Aliases, must fit within C_SIZE!
+// These are for Ginni + Asetniop
+#define GQ STN(0)
+#define GW STN(1)
+#define GE STN(2)
+#define GR STN(3)
+#define GT STN(4)
+#define GY STN(5)
+#define GU STN(6)
+#define GI STN(7)
+#define GO STN(8)
+#define GP STN(9)
+
+#define GA STN(10)
+#define GS STN(11)
+#define GD STN(12)
+#define GF STN(13)
+#define GG STN(14)
+#define GH STN(15)
+#define GJ STN(16)
+#define GK STN(17)
+#define GL STN(18)
+#define GCL STN(19)
+
+#define GZ STN(20)
+#define GX STN(21)
+#define GC STN(22)
+#define GV STN(23)
+#define GB STN(24)
+#define GN STN(25)
+#define GM STN(26)
+#define GLT STN(27)
+#define GGT STN(28)
+#define GQU STN(29)
+
+#define GL1 STN(30)
+#define GL2 STN(31)
+#define GL3 STN(32)
+#define GR3 STN(33)
+#define GR2 STN(34)
+#define GR1 STN(35)
+
+// Chord to start buffering strokes
+#define COMMAND_MODE (GL1 | GR1)
+
+// Mapping of QMK Keycodes to chord positions
+#define ENGINE_CONFIG         \
+    ENGINE_HOOK(KC_Q, GQ)     \
+    ENGINE_HOOK(KC_W, GW)     \
+    ENGINE_HOOK(KC_E, GE)     \
+    ENGINE_HOOK(KC_R, GR)     \
+    ENGINE_HOOK(KC_T, GT)     \
+    ENGINE_HOOK(KC_Y, GY)     \
+    ENGINE_HOOK(KC_U, GU)     \
+    ENGINE_HOOK(KC_I, GI)     \
+    ENGINE_HOOK(KC_O, GO)     \
+    ENGINE_HOOK(KC_P, GP)     \
+    ENGINE_HOOK(KC_A, GA)     \
+    ENGINE_HOOK(KC_S, GS)     \
+    ENGINE_HOOK(KC_D, GD)     \
+    ENGINE_HOOK(KC_F, GF)     \
+    ENGINE_HOOK(KC_G, GG)     \
+    ENGINE_HOOK(KC_H, GH)     \
+    ENGINE_HOOK(KC_J, GJ)     \
+    ENGINE_HOOK(KC_K, GK)     \
+    ENGINE_HOOK(KC_L, GL)     \
+    ENGINE_HOOK(KC_SCLN, GCL) \
+    ENGINE_HOOK(KC_Z, GZ)     \
+    ENGINE_HOOK(KC_X, GX)     \
+    ENGINE_HOOK(KC_C, GC)     \
+    ENGINE_HOOK(KC_V, GV)     \
+    ENGINE_HOOK(KC_B, GB)     \
+    ENGINE_HOOK(KC_N, GN)     \
+    ENGINE_HOOK(KC_M, GM)     \
+    ENGINE_HOOK(KC_COMM, GLT) \
+    ENGINE_HOOK(KC_DOT, GGT)  \
+    ENGINE_HOOK(KC_SLSH, GQU) \
+    ENGINE_HOOK(KC_F1, GL1)   \
+    ENGINE_HOOK(KC_F2, GL2)   \
+    ENGINE_HOOK(KC_F3, GL3)   \
+    ENGINE_HOOK(KC_F4, GR3)   \
+    ENGINE_HOOK(KC_F5, GR2)   \
+    ENGINE_HOOK(KC_F6, GR1)
+#include "engine.h"
+#include "config_engine.h"
+
+// Ginni handling for Left/Right chords
+C_SIZE process_engine_post(C_SIZE cur_chord, uint16_t keycode, keyrecord_t *record) { 
+  if(!record->event.pressed) return cur_chord;
+  // We only care about the first press for setting these bits
+  if (bitpop_v(cur_chord) != 1) return cur_chord;
+
+  // Left side chords
+  if ((cur_chord & (AN | AI | AO | AP)) != 0)  return (cur_chord | RGT);
+  return cur_chord;
+}
+
+C_SIZE process_chord_getnext(C_SIZE cur_chord) { 
+  // Left side chords
+  if ((cur_chord & RGT) == RGT) {
+      return (cur_chord ^ RGT);
+  }
+  return 0;
+}
+#include "engine.h"
+
+// Configuration options for the engine
+
+#define C_SIZE uint16_t             // type for chord
+#define COMBO_MAX 4                     // Longest Combo
+
+// Key Aliases, must fit within C_SIZE!
+// These are for Ginni + Asetniop
+#define AA      STN(0)
+#define AS      STN(1)
+#define AE      STN(2)
+#define AT      STN(3)
+#define AN      STN(4)
+#define AI      STN(5)
+#define AO      STN(6)
+#define AP      STN(7)
+#define AL      STN(8)                  // Left/Right thumbs
+#define AR      STN(9)
+#define NUM     STN(10)                 // Sticky Layer 1
+#define USR     STN(11)                 // Sticky Layer 2
+#define CMD     STN(12)                 // Sticky Layer 3
+#define RGT     STN(13)                 // Right Hand chord
+
+// Chord to start buffering strokes
+#define COMMAND_MODE    (AI | AN | AT | AE)
+#define IN_CHORD_MASK (0xFFFF & ~(AL))      // Special keys that are used for mods
+
+// Mapping of QMK Keycodes to chord positions
+#define ENGINE_CONFIG               \
+        ENGINE_HOOK(KC_A, AA)       \
+        ENGINE_HOOK(KC_S, AS)       \
+        ENGINE_HOOK(KC_E, AE)       \
+        ENGINE_HOOK(KC_T, AT)       \
+        ENGINE_HOOK(KC_N, AN)       \
+        ENGINE_HOOK(KC_I, AI)       \
+        ENGINE_HOOK(KC_O, AO)       \
+        ENGINE_HOOK(KC_P, AP)       \
+        ENGINE_HOOK(KC_L, AL)       \
+        ENGINE_HOOK(KC_R, AR)       
+
+// This is what dictionaries are currently loaded to your device
+// You must add the dictionary to both parts of the keymap
+// For configuring your device, got edit user.def :)
+//
+// Please note the ordering is important! If there are any chord conflicts the
+// highest dictionary will get matched
+//
+// ASETNIOP supports various languages, define the one you wish to include here
+// da, de, en, en-colemak, en-dvorak, es, fn, fr, hu, it, nl, nw, pl, pt, ro, sv, tr
+
+#include "dicts/aset/en-keymap.def"
+#include "dicts/aset/cmd-keymap.def"
+#include "dicts/aset/num-keymap.def"
+#include "dicts/aset/layer-keymap.def"
+#include "user.def"
+/*  This is a stripped down version of the Georgi engine meant for use with
+ *  Ginni. As such serial-Steno features are disabled, chords are 16bits and
+ *  crap is removed where possible
+ *
+ *  Do not use this on anything other then Ginny if you want to be sane
+ */
+#include "engine.h"
+
+// Chord state
+C_SIZE cChord     = 0;  // Current Chord
+int    chordIndex = 0;  // Keys in previousachord
+C_SIZE pressed    = 0;  // number of held keys
+C_SIZE chordState[32];  // Full Chord history
+#define QWERBUF 24      // Size of chords to buffer for output
+
+bool   repeatFlag  = false;  // Should we repeat?
+C_SIZE pChord      = 0;      // Previous Chord
+C_SIZE stickyBits  = 0;      // Or'd with every incoming press
+int    pChordIndex = 0;      // Keys in previousachord
+C_SIZE pChordState[32];      // Previous chord sate
+
+// Key Dicts
+extern const struct keyEntry     keyDict[];
+extern const struct comboEntry   cmbDict[];
+extern const struct funcEntry    funDict[];
+extern const struct stringEntry  strDict[];
+extern const struct specialEntry spcDict[];
+extern size_t                    specialLen;
+extern size_t                    stringLen;
+extern size_t                    funcsLen;
+extern size_t                    keyLen;
+extern size_t                    comboLen;
+
+// Mode state
+enum MODE { STENO = 0, QWERTY, COMMAND };
+enum MODE pMode;
+enum MODE cMode = QWERTY;
+
+// Command State
+#define MAX_CMD_BUF 20
+uint8_t CMDLEN = 0;
+uint8_t CMDBUF[MAX_CMD_BUF];
+
+// Key Repeat state
+bool     inChord    = false;
+bool     repEngaged = false;
+uint16_t repTimer   = 0;
+#define REP_INIT_DELAY 750
+#define REP_DELAY 25
+
+// Mousekeys state
+bool   inMouse = false;
+int8_t mousePress;
+
+//Dictionary Check 
+uint16_t oldStick=0;
+
+// All processing done at chordUp goes through here
+void processKeysUp() {
+    // Check for mousekeys, this is release
+#ifdef MOUSEKEY_ENABLE
+    if (inMouse) {
+        inMouse = false;
+        mousekey_off(mousePress);
+        mousekey_send();
+    }
+#endif
+
+    // handle command mode
+#ifdef COMMAND_MODE
+    if (cChord == COMMAND_MODE) {
+#    ifndef NO_DEBUG
+        uprintf("COMMAND Toggle\n");
+#    endif
+        if (cMode != COMMAND) {  // Entering Command Mode
+            CMDLEN = 0;
+            pMode  = cMode;
+            cMode  = COMMAND;
+        } else {  // Exiting Command Mode
+            cMode = pMode;
+
+            // Press all and release all
+            for (int i = 0; i < CMDLEN; i++) {
+                register_code(CMDBUF[i]);
+            }
+            clear_keyboard();
+        }
+    }
+#endif
+
+    // Process and reset state
+    processChord();
+    cChord     = pressed;
+    inChord    = false;
+    chordIndex = 0;
+    clear_keyboard();
+    repEngaged = false;
+    for (int i = 0; i < 32; i++) chordState[i] = 0xFFFF;
+}
+
+// Update Chord State
+bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
+    // Check if we should run at all
+    if (process_engine_pre(cChord, keycode, record) == false) return true;
+
+    // Everything happens in here when steno keys come in.
+    // Bail on keyup
+
+    // Update key repeat timers
+    repTimer = timer_read();
+    bool pr  = record->event.pressed;
+    // Switch on the press adding to chord
+    switch (keycode) {
+        ENGINE_CONFIG
+        default:
+            return true;
+    }
+
+    // Handle any postprocessing
+
+    // All keys up, send it!
+    if (inChord && !pr && (pressed & IN_CHORD_MASK) == 0) {
+        processKeysUp();
+        return false;
+    }
+    if (pressed == 0 && !pr) {
+        processKeysUp();
+        return false;
+    }
+
+    cChord |= pressed;
+    cChord  = process_engine_post(cChord, keycode, record);
+    inChord = (cChord & IN_CHORD_MASK) != 0;
+
+    // Store previous state for fastQWER
+    if (pr) {
+        chordState[chordIndex] = cChord;
+        chordIndex++;
+    }
+
+#ifndef NO_DEBUG
+    uprintf("Chord: %u\n", cChord);
+#endif
+    return false;
+}
+void matrix_scan_user(void) {
+    // We abuse this for early sending of key
+    // Key repeat only on QWER/SYMB layers
+    if (cMode != QWERTY || !inChord) return;
+
+        // Check timers
+#ifndef NO_HOLD
+    if (!repEngaged && timer_elapsed(repTimer) > REP_INIT_DELAY) {
+        // Process Key for report
+        processChord();
+
+        // Send report to host
+        send_keyboard_report();
+        repEngaged = true;
+    }
+#endif
+};
+
+// Try and match cChord
+C_SIZE mapKeys(C_SIZE chord, bool lookup) {
+    lookup = lookup || repEngaged;
+#ifndef NO_DEBUG
+    if (!lookup) uprint("SENT!\n");
+#endif
+    // Single key chords
+    for (int i = 0; i < keyLen; i++) {
+        if (keyDict[i].chord == chord) {
+            if (!lookup) SEND(keyDict[i].key);
+            return chord;
+        }
+    }
+
+    // strings
+    for (int i = 0; i < stringLen; i++) {
+        struct stringEntry fromPgm;
+        memcpy_P(&fromPgm, &strDict[i], sizeof(stringEntry_t));
+        if (fromPgm.chord == chord) {
+            if (!lookup) {
+                if (get_mods() & (MOD_LSFT | MOD_RSFT)) {
+                    set_mods(get_mods() & ~(MOD_LSFT | MOD_RSFT));
+                    set_oneshot_mods(MOD_LSFT);
+                }
+                send_string_P((PGM_P)(fromPgm.str));
+            }
+            return chord;
+        }
+    }
+
+    // combos
+    for (int i = 0; i < comboLen; i++) {
+        struct comboEntry fromPgm;
+        memcpy_P(&fromPgm, &cmbDict[i], sizeof(comboEntry_t));
+        if (fromPgm.chord == chord) {
+#ifndef NO_DEBUG
+            uprintf("%d found combo\n", i);
+#endif
+
+            if (!lookup) {
+                uint8_t comboKeys[COMBO_MAX];
+                memcpy_P(&comboKeys, fromPgm.keys, sizeof(uint8_t) * COMBO_MAX);
+                for (int j = 0; j < COMBO_MAX; j++)
+#ifndef NO_DEBUG
+                    uprintf("Combo [%u]: %u\n", j, comboKeys[j]);
+#endif
+
+                for (int j = 0; (j < COMBO_MAX) && (comboKeys[j] != COMBO_END); j++) {
+#ifndef NO_DEBUG
+                    uprintf("Combo [%u]: %u\n", j, comboKeys[j]);
+#endif
+                    SEND(comboKeys[j]);
+                }
+            }
+            return chord;
+        }
+    }
+
+    // functions
+    for (int i = 0; i < funcsLen; i++) {
+        if (funDict[i].chord == chord) {
+            if (!lookup) funDict[i].act();
+            return chord;
+        }
+    }
+
+    // Special handling
+    for (int i = 0; i < specialLen; i++) {
+        if (spcDict[i].chord == chord) {
+            if (!lookup) {
+                uint16_t arg = spcDict[i].arg;
+                switch (spcDict[i].action) {
+                    case SPEC_STICKY:
+                        SET_STICKY(arg);
+                        break;
+                    case SPEC_REPEAT:
+                        REPEAT();
+                        break;
+                    case SPEC_CLICK:
+                        CLICK_MOUSE((uint8_t)arg);
+                        break;
+                    case SPEC_SWITCH:
+                        SWITCH_LAYER(arg);
+                        break;
+                    default:
+                        SEND_STRING("Invalid Special in Keymap");
+                }
+            }
+            return chord;
+        }
+    }
+
+    if ((chord & IN_CHORD_MASK) && (chord & IN_CHORD_MASK) != chord && mapKeys((chord & IN_CHORD_MASK), true) == (chord & IN_CHORD_MASK)) {
+#ifndef NO_DEBUG
+        uprintf("Try with ignore mask:%u\n", (chord & IN_CHORD_MASK));
+#endif
+        mapKeys((chord & ~IN_CHORD_MASK), lookup);
+        mapKeys((chord & IN_CHORD_MASK), lookup);
+        return chord;
+    }
+#ifndef NO_DEBUG
+    uprintf("Reached end\n");
+#endif
+    return 0;
+}
+// Traverse the chord history to a given point
+// Returns the mask to use
+void processChord(void) {
+    // Save the clean chord state
+    C_SIZE savedChord = cChord;
+
+    // Apply Stick Bits if needed
+    if (stickyBits != 0) {
+        cChord |= stickyBits;
+        for (int i = 0; i <= chordIndex; i++) chordState[i] |= stickyBits;
+    }
+
+    // First we test if a whole chord was passsed
+    // If so we just run it handling repeat logic
+    if (mapKeys(cChord, true) == cChord) {
+        mapKeys(cChord, false);
+        // Repeat logic
+        if (repeatFlag) {
+#ifndef NO_DEBUG
+            uprintf("repeating?\n");
+#endif
+            restoreState();
+            repeatFlag = false;
+            processChord();
+        } else {
+            saveState(cChord);
+        }
+        return;
+    }
+
+    C_SIZE next = process_chord_getnext(cChord);
+    if (next && next != cChord) {
+#ifndef NO_DEBUG
+        uprintf("Trying next candidate: %u\n", next);
+#endif
+        if (mapKeys(next, true) == next) {
+            mapKeys(next, false);
+            // Repeat logic
+            if (repeatFlag) {
+#ifndef NO_DEBUG
+                uprintf("repeating?\n");
+#endif
+                restoreState();
+                repeatFlag = false;
+                processChord();
+            } else {
+                saveState(cChord);
+            }
+            return;
+        }
+    }
+
+#ifndef NO_DEBUG
+    uprintf("made it past the maw\n");
+#endif
+
+    // Iterate through chord picking out the individual
+    // and longest chords
+    C_SIZE bufChords[QWERBUF];
+    int    bufLen = 0;
+    C_SIZE mask   = 0;
+
+    // We iterate over it multiple times to catch the longest
+    // chord. Then that gets addded to the mask and re run.
+    while (savedChord != mask) {
+        C_SIZE test         = 0;
+        C_SIZE longestChord = 0;
+
+        for (int i = 0; i <= chordIndex; i++) {
+            cChord = chordState[i] & ~mask;
+            if (cChord == 0) continue;
+
+            test = mapKeys(cChord, true);
+            if (test != 0) {
+                longestChord = test;
+            }
+        }
+
+        mask |= longestChord;
+        bufChords[bufLen] = longestChord;
+        bufLen++;
+
+        // That's a loop of sorts, halt processing
+        if (bufLen >= QWERBUF) {
+#ifndef NO_DEBUG
+            uprintf("looped. exiting");
+#endif
+            return;
+        }
+    }
+
+    // Now that the buffer is populated, we run it
+    for (int i = 0; i < bufLen; i++) {
+        cChord = bufChords[i];
+#ifndef NO_DEBUG
+        uprintf("sending: %u\n", cChord);
+#endif
+        mapKeys(cChord, false);
+    }
+
+    // Save state in case of repeat
+    if (!repeatFlag) {
+        saveState(savedChord);
+    }
+
+    // Restore cChord for held repeat
+    cChord = savedChord;
+    return;
+}
+void saveState(C_SIZE cleanChord) {
+    pChord      = cleanChord;
+    pChordIndex = chordIndex;
+    for (int i = 0; i < 32; i++) pChordState[i] = chordState[i];
+}
+void restoreState() {
+    cChord     = pChord;
+    chordIndex = pChordIndex;
+    for (int i = 0; i < 32; i++) chordState[i] = pChordState[i];
+}
+
+// Macros for calling from keymap.c
+void SEND(uint8_t kc) {
+    // Send Keycode, Does not work for Quantum Codes
+    if (cMode == COMMAND && CMDLEN < MAX_CMD_BUF) {
+#ifndef NO_DEBUG
+        uprintf("CMD LEN: %d BUF: %d\n", CMDLEN, MAX_CMD_BUF);
+#endif
+        CMDBUF[CMDLEN] = kc;
+        CMDLEN++;
+    }
+
+    if (cMode != COMMAND) register_code(kc);
+    return;
+}
+void REPEAT(void) {
+    if (cMode != QWERTY) return;
+
+    repeatFlag = true;
+    return;
+}
+void SET_STICKY(C_SIZE stick) {
+   if (stickyBits==0){
+				stickyBits ^= stick; // if stickyBits is ALREADY zero then 0 gets passed thru as its either needed or its a zero sent by something deeper within QMK
+				} 
+			else if(stick > 0 && oldStick==stick) { //arg is more than 0 and its the same as before so back to layer 0: NUM->NUM->0
+				stickyBits = 0; 
+				}	
+			else if(stick > 0 && oldStick!=stick)  {// arg is more than 0 and not the same so reset the stickyBits and increment away: NUM->CMD->NUM
+				stickyBits ^= oldStick;
+				stickyBits ^= stick;
+				}	
+			else {
+				stickyBits = 0; // Failsafe back to 0
+				}
+			oldStick = stick;  //record the dictionary we have now set for the next dictionary switch 
+    return;
+}
+void CLICK_MOUSE(uint8_t kc) {
+#ifdef MOUSEKEY_ENABLE
+    mousekey_on(kc);
+    mousekey_send();
+
+    // Store state for later use
+    inMouse    = true;
+    mousePress = kc;
+#endif
+}
+void SWITCH_LAYER(int layer) {
+#ifndef NO_ACTION_LAYER
+    if (keymapsCount >= layer) {
+        layer_clear();
+        layer_on(layer);
+    }
+#endif
+}
+uint8_t bitpop_v(C_SIZE val) {
+#if C_SIZE == uint8_t
+    return bitpop(val);
+#elif C_SIZE == uint16_t
+    return bitpop16(val);
+#elif C_SIZE == uint32_t
+    return bitpop32(val);
+#elif C_SIZE == uint64_t
+    uint8_t n = 0;
+    if (bits >> 32) {
+        bits >>= 32;
+        n += 32;
+    }
+    if (bits >> 16) {
+        bits >>= 16;
+        n += 16;
+    }
+    if (bits >> 8) {
+        bits >>= 8;
+        n += 8;
+    }
+    if (bits >> 4) {
+        bits >>= 4;
+        n += 4;
+    }
+    if (bits >> 2) {
+        bits >>= 2;
+        n += 2;
+    }
+    if (bits >> 1) {
+        bits >>= 1;
+        n += 1;
+    }
+    return n;
+#else
+#    error unsupported C_SIZE
+#endif
+}
+
+// See engine.h for what these hooks do
+__attribute__((weak)) C_SIZE process_engine_post(C_SIZE cur_chord, uint16_t keycode, keyrecord_t *record) { return cur_chord; }
+__attribute__((weak)) C_SIZE process_engine_pre(C_SIZE cur_chord, uint16_t keycode, keyrecord_t *record) { return true; }
+__attribute__((weak)) C_SIZE process_chord_getnext(C_SIZE cur_chord) { return 0; }
+/* 	2019, g Heavy Industries
+        Blessed mother of Christ, please keep this readable
+        and protect us from segfaults. For thine is the clock,
+        the slave and the master. Until we return from main.
+
+        Amen.
+
+        This is a stripped down version of the Georgi engine meant for use with
+        . As such serial-Steno features are disabled, chords are 16bits and
+        crap is removed where possible
+*/
+
+#include QMK_KEYBOARD_H
+#pragma once
+#include "keymap.h"
+#include <string.h>
+#include <stdint.h>
+#include <stdio.h>
+#include "config_engine.h"
+#include <avr/pgmspace.h>
+#include "wait.h"
+#ifdef MOUSEKEY_ENABLE
+#    include "mousekey.h"
+#endif
+
+// Set defaults
+#ifndef IN_CHORD_MASK
+#    define IN_CHORD_MASK 0xFFFFFFFFFFFFFFFF
+#endif
+
+#ifndef COMBO_END
+#    define COMBO_END 0x00
+#endif
+
+// In memory chord datatypes
+enum specialActions {
+    SPEC_STICKY,
+    SPEC_REPEAT,
+    SPEC_CLICK,
+    SPEC_SWITCH,
+};
+struct funcEntry {
+    C_SIZE chord;
+    void (*act)(void);
+} funcEntry_t;
+struct stringEntry {
+    C_SIZE chord;
+    PGM_P  str;
+} stringEntry_t;
+struct comboEntry {
+    C_SIZE chord;
+    PGM_P  keys;
+} comboEntry_t;
+struct keyEntry {
+    C_SIZE  chord;
+    uint8_t key;
+} keyEntry_t;
+struct specialEntry {
+    C_SIZE              chord;
+    enum specialActions action;
+    uint16_t            arg;
+} specialEntry_t;
+
+// Chord Temps
+extern C_SIZE cChord;
+extern C_SIZE test;
+extern size_t keymapsCount;  // Total keymaps (exported from keymap.c)
+
+// Function defs
+void    processKeysUp(void);
+void    processChord(void);
+C_SIZE  processQwerty(bool lookup);
+C_SIZE  processFakeSteno(bool lookup);
+void    saveState(C_SIZE cChord);
+void    restoreState(void);
+uint8_t bitpop_v(C_SIZE val);
+
+// Macros for use in keymap.c
+void   SEND(uint8_t kc);
+void   REPEAT(void);
+void   SET_STICKY(C_SIZE);
+void   SWITCH_LAYER(int);
+void   CLICK_MOUSE(uint8_t);
+C_SIZE process_chord_getnext(C_SIZE cur_chord);
+// Run before hitting the engine. Return false to skip engine processing
+C_SIZE process_engine_pre(C_SIZE cur_chord, uint16_t keycode, keyrecord_t *record);
+// Run after reading a chord.
+C_SIZE process_engine_post(C_SIZE cur_chord, uint16_t keycode, keyrecord_t *record);
+
+// Keymap helpers
+// New Approach, multiple structures
+#define P_KEYMAP(chord, keycode) {chord, keycode},
+
+#define K_KEYMAP(chord, name, ...) {chord, (PGM_P)&name},
+#define K_ACTION(chord, name, ...) const uint8_t name[] PROGMEM = __VA_ARGS__;
+
+#define S_KEYMAP(chord, name, string) {chord, (PGM_P)&name},
+#define S_ACTION(chord, name, string) const char name[] PROGMEM = string;
+
+#define X_KEYMAP(chord, name, func) {chord, name},
+#define X_ACTION(chord, name, func) \
+    void name(void) { func }
+
+#define Z_KEYMAP(chord, act, arg) {chord, act, arg},
+
+#define TEST_COLLISION(chord, ...) \
+    case chord:                    \
+        break;
+#define BLANK(...)
+
+// Shift to internal representation
+// i.e) S(teno)R(ight)F
+#define STN(n) ((C_SIZE)1 << n)
+#define ENGINE_HOOK(keycode, chord)                        \
+    case keycode:                                          \
+        pr ? (pressed |= (chord)) : (pressed &= ~(chord)); \
+        break;
+#include QMK_KEYBOARD_H
+#include "engine.h"
+#include "keymap_engine.h"
+
+const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
+[0] = LAYOUT (
+       KC_A, KC_S, KC_E, KC_T, KC_L, KC_R, KC_N, KC_I, KC_O, KC_P,
+       KC_A, KC_S, KC_E, KC_T, KC_L, KC_R, KC_N, KC_I, KC_O, KC_P
+)};
+// Keymap helpers
+
+#define K_ENUM(name, key, ...) name,
+#define K_DATA(name, key, ...) const uint16_t PROGMEM cmb_##name[] = {__VA_ARGS__, COMBO_END};
+#define K_COMB(name, key, ...) [name] = COMBO(cmb_##name, key),
+
+#define A_ENUM(name, string, ...) name,
+#define A_DATA(name, string, ...) const uint16_t PROGMEM cmb_##name[] = {__VA_ARGS__, COMBO_END};
+#define A_COMB(name, string, ...) [name] = COMBO_ACTION(cmb_##name),
+#define A_ACTI(name, string, ...)         \
+    case name:                            \
+        if (pressed) SEND_STRING(string); \
+        break;
+
+#define A_TOGG(name, layer, ...)          \
+    case name:                            \
+        if (pressed) layer_invert(layer); \
+        break;
+
+#define BLANK(...)
+// Generate data needed for combos/actions
+// Create Enum
+#undef COMB
+#undef SUBS
+#undef TOGG
+#define COMB K_ENUM
+#define SUBS A_ENUM
+#define TOGG A_ENUM
+enum combos {
+#include "combos.def"
+};
+
+// Bake combos into mem
+#undef COMB
+#undef SUBS
+#undef TOGG
+#define COMB K_DATA
+#define SUBS A_DATA
+#define TOGG A_DATA
+#include "combos.def"
+#undef COMB
+#undef SUBS
+#undef TOGG
+
+// Fill combo array
+#define COMB K_COMB
+#define SUBS A_COMB
+#define TOGG A_COMB
+combo_t key_combos[] = {
+#include "combos.def"
+};
+#undef COMB
+#undef SUBS
+#undef TOGG
+
+// Export length to combo module
+int COMBO_LEN = sizeof(key_combos) / sizeof(key_combos[0]);
+
+// Fill QMK hook
+#define COMB BLANK
+#define SUBS A_ACTI
+#define TOGG A_TOGG
+void process_combo_event(uint16_t combo_index, bool pressed) {
+    switch (combo_index) {
+#include "combos.def"
+    }
+
+    // Allow user overrides per keymap
+#if __has_include("inject.h") 
+# include "inject.h"
+#endif
+}
+#undef COMB
+#undef SUBS
+#undef TOGG
+/* If for some reason you're still here, maybe due to horror, shock or
+ * some other godforsaken reason. Meet X Macros.
+ *
+ * The we abuse the include system to generate data structures that are
+ * used by the internal chording engine. The alternative to this is
+ * using a external generator (Like is done for the ASETNIOP base keymaps)
+ * With this disgusting bodge, you can just edit your .defs and compile!
+ */
+#include "engine.h"
+
+// Clear all X Macros
+#define PRES BLANK
+#define KEYS BLANK
+#define SUBS BLANK
+#define EXEC BLANK
+#define SPEC BLANK
+
+// Process single key pushes
+#undef PRES
+#define PRES P_KEYMAP
+const struct keyEntry keyDict[] = {
+#include "dicts.def"
+};
+#undef PRES
+#define PRES BLANK
+
+// Process Combos
+#undef KEYS
+#define KEYS K_ACTION
+#include "dicts.def"
+#undef KEYS
+#define KEYS BLANK
+
+#undef KEYS
+#define KEYS K_KEYMAP
+const struct comboEntry PROGMEM cmbDict[] = {
+#include "dicts.def"
+};
+#undef KEYS
+#define KEYS BLANK
+
+// Process String stubs
+#undef SUBS
+#define SUBS S_ACTION
+#include "dicts.def"
+#undef SUBS
+#define SUBS BLANK
+
+// Generate dict for strings
+#undef SUBS
+#define SUBS S_KEYMAP
+const struct stringEntry PROGMEM strDict[] = {
+#include "dicts.def"
+};
+#undef SUBS
+#define SUBS BLANK
+
+// Generate function stubs
+#undef EXEC
+#define EXEC X_ACTION
+#include "dicts.def"
+#undef EXEC
+#define EXEC BLANK
+
+// Process the function structure
+#undef EXEC
+#define EXEC X_KEYMAP
+const struct funcEntry funDict[] = {
+#include "dicts.def"
+};
+#undef EXEC
+#define EXEC BLANK
+
+// Handle Special calls
+#undef SPEC
+#define SPEC Z_KEYMAP
+const struct specialEntry spcDict[] = {
+#include "dicts.def"
+};
+#undef SPEC
+#define SPEC BLANK
+
+// Test for collisions!
+// Switch statement will explode on duplicate
+// chords. This will be optimized out
+#undef PRES
+#undef KEYS
+#undef SUBS
+#undef EXEC
+#undef SPEC
+#define PRES TEST_COLLISION
+#define KEYS TEST_COLLISION
+#define SUBS TEST_COLLISION
+#define EXEC TEST_COLLISION
+#define SPEC TEST_COLLISION
+void testCollisions(void) {
+    C_SIZE bomb = 0;
+    switch (bomb) {
+#include "dicts.def"
+    }
+}
+
+// Test for unexpected input
+// Should return blank lines for all valid input
+#undef PRES
+#undef KEYS
+#undef SUBS
+#undef EXEC
+#undef SPEC
+#define PRES BLANK
+#define KEYS BLANK
+#define SUBS BLANK
+#define EXEC BLANK
+#define SPEC BLANK
+#include "dicts.def"
+
+// Get size data back into the engine
+size_t funcsLen   = sizeof(funDict) / sizeof(funDict[0]);
+size_t stringLen  = sizeof(strDict) / sizeof(strDict[0]);
+size_t keyLen     = sizeof(keyDict) / sizeof(keyDict[0]);
+size_t comboLen   = sizeof(cmbDict) / sizeof(cmbDict[0]);
+size_t specialLen = sizeof(spcDict) / sizeof(spcDict[0]);
+# MCU name
+MCU                 =   atmega32u4
+BOOTLOADER          =   atmel-dfu
+
+CUSTOM_MATRIX       =   yes
+VIRTSER_ENABLE      =   no
+NKRO_ENABLE         =   no
+DEBOUNCE_TYPE       =   eager_pr
+
+# Lets try and save some space eh?
+MOUSEKEY_ENABLE     =   no
+EXTRAKEY_ENABLE     =   no
+CONSOLE_ENABLE      =   yes
+COMMAND_ENABLE      =   no
+
+SRC                 +=  engine.c config_engine.c
+OPT_DEFS            +=  -DONLYQWERTY 
+LTO_ENABLE          =   yes
+/* Welcome to ASETNIOP
+ *
+ * This file contains your personal chords, the  basic layout, symbols and 
+ * layers are in different files. Refer to dicts.def for their locations!
+ *
+ * This is a very different layout based off this table
+ * http://asetniop.com/ 
+ *
+ * Unlike standard Asetniop there are a few concessions that must be
+ * made. Namely we don't do partials and if a chord has multiple left/
+ * right words we go with the most common of the two.
+ *
+ * Also note, All Combos _must_ be done through Command Mode! If you
+ * use a combo enough add it to your dictionary in the USR section!
+ *
+ * Two 'layers' are available, CMD and USR. Just add these into a chord. 
+ * You'll enter/exit these layers with SET_STICKY(CMD) and SET_STICKY(0)
+ *
+ * Note: The engine optimizes for the longest chord it can find, every
+ * now and again this makes conflicts! If you have a better dictionary
+ * or come up with improvements, please submit a PR!
+ */
+
+
+// You can use the following aliases in your chords
+// AA, AS, AE, AT, AN, AI, AO, AP, AL, AR (Left/Right thumb)
+// NUM, USR and CMD are also available
+
+// User defs
+SUBS(USR | AA,											undef1, "undefined User ")
+SUBS(USR | AS,											undef2, "undefined User ")
+SUBS(USR | AE,											undef3, "undefined User ")
+SUBS(USR | AT,											undef4, "undefined User ")
+SUBS(USR | AN,											undef5, "undefined User ")
+SUBS(USR | AI,											undef6, "undefined User ")
+SUBS(USR | AO,											undef7, "undefined User ")
+SUBS(USR | AP,											undef8, "undefined User ")
+SUBS(USR | AR,											undef9, "undefined User ")
+SUBS(USR | AL,											undef0, "undefined User ")
+
+// Quick Fires
+SUBS(AR | AA | AS,									qf0, 		"Undefined Quick Fire ")
+SUBS(AR | AS | AE,									qf1, 		"Undefined Quick Fire ")
+SUBS(AR | AE | AT,									qf2, 		"Undefined Quick Fire ")
+SUBS(AR | AT | AN,									qf3, 		"Undefined Quick Fire ")
+SUBS(AR | AN | AI,									qf4, 		"Undefined Quick Fire ")
+SUBS(AR | AI | AO,									qf5, 		"Undefined Quick Fire ")
+SUBS(AR | AO | AP,									qf6, 		"Undefined Quick Fire ")
