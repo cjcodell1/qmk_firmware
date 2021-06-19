@@ -20,6 +20,8 @@ RGBLIGHT_ENABLE = yes       # Enable keyboard RGB underglow
 BLUETOOTH_ENABLE = no       # Enable Bluetooth
 AUDIO_ENABLE = no           # Audio output
 CUSTOM_MATRIX = lite
+NO_USB_STARTUP_CHECK = yes
+LTO_ENABLE = yes
 
 SRC += matrix.c
 QUANTUM_LIB_SRC += i2c_master.c

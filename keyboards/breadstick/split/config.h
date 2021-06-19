@@ -31,6 +31,8 @@
 #define MATRIX_ROWS_PER_SIDE (MATRIX_ROWS / 2)
 #define MATRIX_COLS_PER_SIDE (MATRIX_COLS / 2)
 
+#define UNUSED_MCU 13
+#define UNUSED_MCP 8
 /*
  * Keyboard Matrix Assignments
  *
@@ -43,10 +45,10 @@
  */
 #define MATRIX_ROW_PINS_MCU { F1, F0, F6, F7 }
 #define MATRIX_COL_PINS_MCU { B6, F4, F5 }
-#define UNUSED_PINS_MCU
+#define UNUSED_PINS_MCU { B0, B1, B2, B3, B5, C6, C7, D2, D3, D4, D5, D7, E6 }
 #define MATRIX_ROW_PINS_MCP { A0, A1, A4, A5 }
 #define MATRIX_COL_PINS_MCP { A3, A2, A7 }
-#define UNUSeD_PINS_MCP
+#define UNUSeD_PINS_MCP { B0, B1, B2, B3, B4, B5, B6, A6}
 
 /* COL2ROW, ROW2COL*/
 //#define DIODE_DIRECTION COL2ROW
