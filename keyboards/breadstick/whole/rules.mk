@@ -19,8 +19,3 @@ BACKLIGHT_ENABLE = no       # Enable keyboard backlight functionality
 RGBLIGHT_ENABLE = yes       # Enable keyboard RGB underglow
 BLUETOOTH_ENABLE = no       # Enable Bluetooth
 AUDIO_ENABLE = no           # Audio output
-STENO_ENABLE = yes          # Chording
-
-OPT_DEFS += -DONLYQWERTY
-SRC += sten.c
-EXTRAFLAGS += -flto
